@@ -7,6 +7,7 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
+from ..core.query_encoder import encode_query
 from ..core.remove_none_from_dict import remove_none_from_dict
 from ..core.request_options import RequestOptions
 from ..core.unchecked_base_model import construct_type
@@ -58,8 +59,10 @@ class SamplesClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/voices/{jsonable_encoder(voice_id)}/samples/{jsonable_encoder(sample_id)}",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -89,7 +92,7 @@ class SamplesClient:
 
     def get_audio(
         self, voice_id: str, sample_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    ) -> typing.Iterator[bytes]:
         """
         Returns the audio corresponding to a sample attached to a voice.
 
@@ -104,9 +107,10 @@ class SamplesClient:
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
-        Returns
-        -------
-        None
+        Yields
+        ------
+        typing.Iterator[bytes]
+            Successful Response
 
         Examples
         --------
@@ -120,14 +124,16 @@ class SamplesClient:
             sample_id="pMsXgVXv3BLzUgSXRplE",
         )
         """
-        _response = self._client_wrapper.httpx_client.request(
+        with self._client_wrapper.httpx_client.stream(
             method="GET",
             url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/voices/{jsonable_encoder(voice_id)}/samples/{jsonable_encoder(sample_id)}/audio",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -142,18 +148,21 @@ class SamplesClient:
             else self._client_wrapper.get_timeout(),
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 422:
-            raise UnprocessableEntityError(
-                typing.cast(HttpValidationError, construct_type(type_=HttpValidationError, object_=_response.json()))  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+        ) as _response:
+            if 200 <= _response.status_code < 300:
+                for _chunk in _response.iter_bytes():
+                    yield _chunk
+                return
+            _response.read()
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(HttpValidationError, construct_type(type_=HttpValidationError, object_=_response.json()))  # type: ignore
+                )
+            try:
+                _response_json = _response.json()
+            except JSONDecodeError:
+                raise ApiError(status_code=_response.status_code, body=_response.text)
+            raise ApiError(status_code=_response.status_code, body=_response_json)
 
 
 class AsyncSamplesClient:
@@ -200,8 +209,10 @@ class AsyncSamplesClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/voices/{jsonable_encoder(voice_id)}/samples/{jsonable_encoder(sample_id)}",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -231,7 +242,7 @@ class AsyncSamplesClient:
 
     async def get_audio(
         self, voice_id: str, sample_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    ) -> typing.AsyncIterator[bytes]:
         """
         Returns the audio corresponding to a sample attached to a voice.
 
@@ -246,9 +257,10 @@ class AsyncSamplesClient:
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
-        Returns
-        -------
-        None
+        Yields
+        ------
+        typing.AsyncIterator[bytes]
+            Successful Response
 
         Examples
         --------
@@ -262,14 +274,16 @@ class AsyncSamplesClient:
             sample_id="pMsXgVXv3BLzUgSXRplE",
         )
         """
-        _response = await self._client_wrapper.httpx_client.request(
+        async with self._client_wrapper.httpx_client.stream(
             method="GET",
             url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/voices/{jsonable_encoder(voice_id)}/samples/{jsonable_encoder(sample_id)}/audio",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -284,15 +298,18 @@ class AsyncSamplesClient:
             else self._client_wrapper.get_timeout(),
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 422:
-            raise UnprocessableEntityError(
-                typing.cast(HttpValidationError, construct_type(type_=HttpValidationError, object_=_response.json()))  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+        ) as _response:
+            if 200 <= _response.status_code < 300:
+                async for _chunk in _response.aiter_bytes():
+                    yield _chunk
+                return
+            await _response.aread()
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    typing.cast(HttpValidationError, construct_type(type_=HttpValidationError, object_=_response.json()))  # type: ignore
+                )
+            try:
+                _response_json = _response.json()
+            except JSONDecodeError:
+                raise ApiError(status_code=_response.status_code, body=_response.text)
+            raise ApiError(status_code=_response.status_code, body=_response_json)
