@@ -8,6 +8,7 @@ from .. import core
 from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
+from ..core.query_encoder import encode_query
 from ..core.remove_none_from_dict import remove_none_from_dict
 from ..core.request_options import RequestOptions
 from ..core.unchecked_base_model import construct_type
@@ -76,8 +77,10 @@ class PronunciationDictionaryClient:
             url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", "v1/pronunciation-dictionaries/add-from-file"
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             data=jsonable_encoder(remove_none_from_dict({"name": name, "description": description}))
             if request_options is None or request_options.get("additional_body_parameters") is None
@@ -158,8 +161,10 @@ class PronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(pronunciation_dictionary_id)}/add-rules",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             json=jsonable_encoder({"rules": rules})
             if request_options is None or request_options.get("additional_body_parameters") is None
@@ -237,8 +242,10 @@ class PronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(pronunciation_dictionary_id)}/remove-rules",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             json=jsonable_encoder({"rule_strings": rule_strings})
             if request_options is None or request_options.get("additional_body_parameters") is None
@@ -312,8 +319,10 @@ class PronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(dictionary_id)}/{jsonable_encoder(version_id)}/download",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -377,8 +386,10 @@ class PronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(pronunciation_dictionary_id)}/",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -446,17 +457,19 @@ class PronunciationDictionaryClient:
         _response = self._client_wrapper.httpx_client.request(
             method="GET",
             url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "v1/pronunciation-dictionaries/"),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "cursor": cursor,
-                        "page_size": page_size,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
+            params=encode_query(
+                jsonable_encoder(
+                    remove_none_from_dict(
+                        {
+                            "cursor": cursor,
+                            "page_size": page_size,
+                            **(
+                                request_options.get("additional_query_parameters", {})
+                                if request_options is not None
+                                else {}
+                            ),
+                        }
+                    )
                 )
             ),
             headers=jsonable_encoder(
@@ -536,8 +549,10 @@ class AsyncPronunciationDictionaryClient:
             url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", "v1/pronunciation-dictionaries/add-from-file"
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             data=jsonable_encoder(remove_none_from_dict({"name": name, "description": description}))
             if request_options is None or request_options.get("additional_body_parameters") is None
@@ -618,8 +633,10 @@ class AsyncPronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(pronunciation_dictionary_id)}/add-rules",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             json=jsonable_encoder({"rules": rules})
             if request_options is None or request_options.get("additional_body_parameters") is None
@@ -697,8 +714,10 @@ class AsyncPronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(pronunciation_dictionary_id)}/remove-rules",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             json=jsonable_encoder({"rule_strings": rule_strings})
             if request_options is None or request_options.get("additional_body_parameters") is None
@@ -772,8 +791,10 @@ class AsyncPronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(dictionary_id)}/{jsonable_encoder(version_id)}/download",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -837,8 +858,10 @@ class AsyncPronunciationDictionaryClient:
                 f"{self._client_wrapper.get_base_url()}/",
                 f"v1/pronunciation-dictionaries/{jsonable_encoder(pronunciation_dictionary_id)}/",
             ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+            params=encode_query(
+                jsonable_encoder(
+                    request_options.get("additional_query_parameters") if request_options is not None else None
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -906,17 +929,19 @@ class AsyncPronunciationDictionaryClient:
         _response = await self._client_wrapper.httpx_client.request(
             method="GET",
             url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "v1/pronunciation-dictionaries/"),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "cursor": cursor,
-                        "page_size": page_size,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
+            params=encode_query(
+                jsonable_encoder(
+                    remove_none_from_dict(
+                        {
+                            "cursor": cursor,
+                            "page_size": page_size,
+                            **(
+                                request_options.get("additional_query_parameters", {})
+                                if request_options is not None
+                                else {}
+                            ),
+                        }
+                    )
                 )
             ),
             headers=jsonable_encoder(
